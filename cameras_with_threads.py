@@ -1,6 +1,7 @@
 import queue, threading
 from queue import Queue
 import cv2
+from RovCams import RovCam
 
 
 COUNT = 0
@@ -21,12 +22,11 @@ class system_manager():
 
 def camera_reader(source, camera_queue):
     print("Cam Loading...")
-    cap = cv2.VideoCapture(source)
+    cap = RovCam(source)
     print("Cam Loaded...")
     while(True):
-        ret, frame = cap.read()
-        if ret:
-            camera_queue.put(frame)
+        frame = cap.read()
+        camera_queue.put(frame)
 
 
 def camera_display(camera_queue, window_name):
@@ -43,7 +43,7 @@ def camera_display(camera_queue, window_name):
 if __name__ == "__main__":
     SM = system_manager(source=0)
     SM = system_manager(source=1)
-    SM = system_manager(source=2)
+  
 
 
 
