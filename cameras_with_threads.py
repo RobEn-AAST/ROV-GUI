@@ -1,7 +1,7 @@
 import queue, threading
 from queue import Queue
 import cv2
-from RovCams import RovCam
+from rovlib.cameras import RovCam
 
 
 COUNT = 0
