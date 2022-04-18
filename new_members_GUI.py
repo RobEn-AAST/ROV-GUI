@@ -16,8 +16,8 @@ f1 = Frame(root, bg="grey")
 f2 = Frame(root, bg="pink")
 
 # Initialize labels
-w1 = Label(f1, text="Red", bg="red", fg="white",height=3)
-w2 = Label(f1, text="Green", bg="green", fg="white",height=25)
+w1 = Label(f1, text="Red", bg="black", fg="white",height=3)
+w2 = Label(f1, text="Green", bg="green", fg="white")
 
 b1 = Button(w1,text = "Button 1",width=15)
 b2 = Button(w1,text = "Button 2",width=15)
@@ -46,10 +46,7 @@ w1b.pack(side=LEFT, fill=BOTH, expand=True)
 w3b.pack(side=LEFT, fill=BOTH, expand=True)
 
 camera_caps =cv2.VideoCapture(0)
-
-camera_caps.set(3,300)
-
-
+camera_caps.set(4,400)
 while True:
     ret,cameras_frame = camera_caps.read()
     cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
