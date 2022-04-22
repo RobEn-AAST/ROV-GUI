@@ -41,8 +41,8 @@ def camera_display(camera_queue, window_name):
 
 
 if __name__ == "__main__":
-    SM = system_manager(source=0)
-    SM1 = system_manager(source=1)
+    SM = system_manager(RovCam.FRONT)
+    SM1 = system_manager(RovCam.ARM)
   
 
 
