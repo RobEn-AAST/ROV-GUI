@@ -4,6 +4,7 @@ from tkinter import Button, Tk, Label, X, Frame, Y, LEFT, BOTH
 import cv2
 from tkinter import *
 from PIL import Image, ImageTk
+import threading
 
    
 import sys
@@ -18,6 +19,11 @@ root.title("ROV")
 root.attributes('-fullscreen', True)
 
 def touch_1(n,width,height):
+    
+
+    camera_cap = cv2.VideoCapture(0)
+    camera_cap.set(cv2.CAP_PROP_FRAME_WIDTH, 2160)
+    camera_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     dim = (width,height)
     new_window= Toplevel(root)
     new_window.title("camera " + str(n))
@@ -28,22 +34,28 @@ def touch_1(n,width,height):
     w4 = Label(f3, text="Blue", bg="blue", fg="white")
     w4.pack(side=LEFT, fill=BOTH, expand=True)
     
-   
+    
     while True:
             
         
-        ret,cameras_frame = camera_caps.read()
+        ret,cameras_frame = camera_cap.read()
         cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
         img = Image.fromarray(cv2image)
        
         imgtk = ImageTk.PhotoImage(image = img)
         w4.imgtk = imgtk
         w4.configure(image=imgtk)
-        root.update_idletasks()
-        root.update()
+        w4.update_idletasks()
+        w4.update()
+
+    
+
+         
   
 def close():
-     root.destroy()   
+     root.destroy()  
+
+     
 
 f1 = Frame(root, bg="grey")
 f2 = Frame(root, bg="pink")
@@ -53,6 +65,7 @@ w1 = Label(f1, text="Red", bg="black", fg="white",height=3)
 w2 = Label(f1, text="Green", bg="green", fg="white")
 
 b1 = Button(w1,text = "Button 1",width=15,command=lambda:touch_1(1,width,height))
+
 b2 = Button(w1,text = "Button 2",width=15,command=lambda:touch_1(1,width,height))
 b3 = Button(w1,text = "Button 3",width=15,command=lambda:touch_1(1,width,height))
 b4 = Button(w1,text = "quit",width=15,command=close)
@@ -85,6 +98,12 @@ camera_caps.set(4,400)
 
 while True:
     ret,cameras_frame = camera_caps.read()
+    print (ret)
+    if ret!= True:
+        camera_caps =cv2.VideoCapture(0)
+        camera_caps.set(4,400)
+        ret,cameras_frame = camera_caps.read()
+
     cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
     img = Image.fromarray(cv2image)
     
