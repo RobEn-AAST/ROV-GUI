@@ -18,7 +18,7 @@ root.title("ROV")
 # Initialize frames
 root.attributes('-fullscreen', True)
 def touch_1(n,width,height):
-    dim = (800,800)
+    dim = (width,height)
     new_window = Toplevel(root)
     new_window.title("camera " + str(n))
     new_window.geometry("%dx%d" % (width, height))
@@ -77,18 +77,29 @@ w3b.pack(side=LEFT, fill=BOTH, expand=True)
 camera_caps =cv2.VideoCapture(0)
 camera_caps.set(4,400)
 dim = (width,height)
+dim1 = (width//2,height//2)
+dim2 = (width,height//2)
+dim3 = (width//2,height//2)
+
 while True:
     ret,cameras_frame = camera_caps.read()
     cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
-    img = Image.fromarray(cv2image)
+    img1 = cv2.resize(cv2image,dim1,fx=1,fy=1, interpolation = cv2.INTER_AREA)
+    img2 = cv2.resize(cv2image, dim2,fx=1,fy=1,  interpolation = cv2.INTER_AREA)
+    img3 = cv2.resize(cv2image,dim3, fx=1,fy=1,interpolation = cv2.INTER_AREA)
+    img1 = Image.fromarray(img1)
+    img2 = Image.fromarray(img2)
+    img3 = Image.fromarray(img3)
     #img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-    imgtk = ImageTk.PhotoImage(image = img)
-    w3b.imgtk = imgtk
-    w3b.configure(image=imgtk)
-    w1b.imgtk = imgtk
-    w1b.configure(image=imgtk)
-    w2.imgtk = imgtk
-    w2.configure(image=imgtk)
+    imgtk1 = ImageTk.PhotoImage(image = img1)
+    imgtk2 = ImageTk.PhotoImage(image = img2)
+    imgtk3 = ImageTk.PhotoImage(image = img3)
+    w3b.imgtk = imgtk3
+    w3b.configure(image=imgtk3)
+    w1b.imgtk = imgtk1
+    w1b.configure(image=imgtk1)
+    w2.imgtk = imgtk2
+    w2.configure(image=imgtk2)
 
     root.update_idletasks()
     root.update()
