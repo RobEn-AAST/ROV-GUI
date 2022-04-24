@@ -46,7 +46,7 @@ f2 = Frame(root, bg="pink")
 
 # Initialize labels
 w1 = Label(f1, text="Red", bg="black", fg="white",height=3)
-w2 = Label(f1, text="Green", bg="green", fg="white")
+w2 = Label(f1, text="Green", bg="white", fg="white")
 
 b1 = Button(w1,text = "Button 1",width=15,command=lambda:touch_1(1,width,height))
 b2 = Button(w1,text = "Button 2",width=15,command=lambda:touch_1(1,width,height))
@@ -78,7 +78,7 @@ camera_caps =cv2.VideoCapture(0)
 camera_caps.set(4,400)
 dim = (width,height)
 dim1 = (width//2,height//2)
-dim2 = (width,height//2)
+dim2 = (width//2,height//2)
 dim3 = (width//2,height//2)
 
 while True:
