@@ -1,62 +1,137 @@
-from queue import Queue
-import queue
-from time import time, sleep
-from tkinter import *
-from PIL import Image, ImageTk
+from distutils.cmd import Command
+from pickle import TRUE
+from tkinter import Button, Tk, Label, X, Frame, Y, LEFT, BOTH
 import cv2
+from tkinter import *
+from PIL import Image, ImageTk   
+import sys
+import re
+root = Tk()
+import queue
 import threading
-from queue import Queue
+from collections import deque
 
-# Create an instance of TKinter Window or frame
-win = Tk()
+width = root.winfo_screenwidth()
+height = root.winfo_screenheight()
 
-UN_AV_IMG = cv2.imread("unav.jpg", cv2.IMREAD_COLOR)
+root.geometry("%dx%d" % (width, height))
 
+root.title("ROV")
 
+# Initialize frames
+root.attributes('-fullscreen', True)
+def touch_1(n,width,height,index):
+    dim = (width,height)
+    new_window = Toplevel(root)
+    new_window.title("camera " + str(n))
+    new_window.geometry("%dx%d" % (width, height))
 
-# Set the size of the window
-win.geometry("1200x1200")
-
-# Create a Label to capture the Video frames
-labels = (Label(win, width = 400, height = 400),
-        Label(win, width = 400, height = 400),
-        Label(win, width = 400, height = 400))
-
-
-
-labels[0].place(x = 0 , y= 0)
-labels[1].place(x = 500 , y= 0)
-labels[2].place(x = 500 , y= 500)
-
-
-
-# global threads
-
-def show_frames():
-    camera_caps =[cv2.VideoCapture(0), cv2.VideoCapture(1), cv2.VideoCapture(2)]
-    cam_iterator = 0
+    f3 = Frame(new_window, bg="pink")    
+    f3.pack(fill=BOTH, expand=True)
+    w4 = Label(f3, text="Blue", bg="blue", fg="white")
+    w4.pack(side=LEFT, fill=BOTH, expand=True)
     while True:
-        cameras_frame = camera_caps[0].read(), camera_caps[1].read(), camera_caps[2].read()
-        
-            # frames(i,cameras_frame)
-        if cameras_frame[cam_iterator][0]:
-            # Get the latest frame and convert into Image
-            cv2image= cv2.cvtColor(cameras_frame[cam_iterator][1],cv2.COLOR_BGR2RGB)
-            img = Image.fromarray(cv2image)
-            # Convert image to PhotoImage
+        frame ,source  = camera_queue.get()
+        if source ==index:
+            cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+            img = cv2.resize(cv2image, dim,fx = 2, fy = 2, interpolation = cv2.INTER_AREA)
+            img = Image.fromarray(img)
             imgtk = ImageTk.PhotoImage(image = img)
-            labels[cam_iterator].imgtk = imgtk
-            labels[cam_iterator].configure(image=imgtk)
-                # Repeat after an interval to capture continiously
-            win.update_idletasks()
-            win.update()
-        else:
-            camera_caps[cam_iterator] = cv2.VideoCapture(cam_iterator)
-            print("An exception occurred") 
-            # flag_handler(flag)
-        cam_iterator = (cam_iterator + 1) if (cam_iterator + 1) < 3 else 0
+            w4.imgtk = imgtk
+            w4.configure(image=imgtk)
+            root.update_idletasks()
+            root.update()
+        
+  
+def close():
+     root.destroy()  
+
+camera_queue = queue.Queue(maxsize=2000)
+def camera_reader(source, camera_queue):
+    print("Cam Loading...")
+    cap = cv2.VideoCapture(source)
+    print("Cam Loaded...")
+    while(True):
+        ret,frame = cap.read()
+        camera_queue.put([frame,source]) 
+
+camera_read = threading.Thread(target=camera_reader, args=(0, camera_queue,))
+camera_read.daemon = True
+camera_read.start() 
+
+camera_read = threading.Thread(target=camera_reader, args=(1, camera_queue,))
+camera_read.daemon = True
+camera_read.start() 
+
+# camera_read = threading.Thread(target=camera_reader, args=(2, camera_queue,))
+# camera_read.daemon = True
+# camera_read.start() 
+
+# camera_read = threading.Thread(target=camera_reader, args=(0, camera_queue,))
+# camera_read.daemon = True
+# camera_read.start()  
+
+# camera_read = threading.Thread(target=camera_reader, args=(0, camera_queue,))
+# camera_read.daemon = True
+# camera_read.start()  
+
+camera_queue.join()     
+
+f1 = Frame(root, bg="grey")
+f2 = Frame(root, bg="pink")
+
+# Initialize labels
+labels = (Label(f1, text="Red", bg="black", fg="white",height=3),
+          Label(f1, text="Green", bg="green", fg="white")
+          ,Label(f2, text="Red", bg="red", fg="white")
+         , Label(f2, text="Blue", bg="blue", fg="white") )
 
 
-show_frames()
+b1 = Button(labels[0],text = "Button 1",width=15,command=lambda:touch_1(1,width,height,0))
+b2 = Button(labels[0],text = "Button 2",width=15,command=lambda:touch_1(1,width,height,1))
+b3 = Button(labels[0],text = "Button 3",width=15,command=lambda:touch_1(1,width,height,2))
+b4 = Button(labels[0],text = "quit",width=15,command=close)
 
 
+
+# Packing level 1
+f1.pack(fill=X)
+f2.pack(fill=BOTH, expand=True)
+
+# Packing level 2
+labels[0].pack(fill=X)
+labels[1].pack(fill=X)
+b1.pack(side="left")
+b2.pack(side="left")
+b3.pack(side="left")
+b4.pack(side="left")
+
+labels[2].pack(side=LEFT, fill=BOTH, expand=True)
+
+labels[3].pack(side=LEFT, fill=BOTH, expand=True)
+
+# camera_caps =cv2.VideoCapture(0)
+# camera_caps.set(4,400)
+# dim = (width,height)
+dim1 = (width//2,height//2)
+
+
+dim = [(width//2,height//2),(width,height//2),(width//2,height//2)]
+    
+
+while True:
+    frame ,source  = camera_queue.get()
+    cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+    img1 = cv2.resize(cv2image,dim1,fx=1,fy=1, interpolation = cv2.INTER_AREA)
+   
+    img1 = Image.fromarray(img1)
+    
+    #img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    imgtk = ImageTk.PhotoImage(image = img1)
+    
+    labels[source+1].imgtk = imgtk
+    labels[source+1].configure(image=imgtk)
+    
+
+    root.update_idletasks()
+    root.update()
