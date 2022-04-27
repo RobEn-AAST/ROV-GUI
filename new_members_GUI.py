@@ -5,6 +5,8 @@ import cv2
 from tkinter import *
 from PIL import Image, ImageTk 
 import random 
+import os
+
 root = Tk()
 
 width = root.winfo_screenwidth()
@@ -16,7 +18,18 @@ root.title("ROV")
 
 # Initialize frames
 root.attributes('-fullscreen', True)
-def touch_1(n,width,height,camera_cap):
+snp_cnt = [0]
+def snaps(camera_cap0,snp_cnt):
+
+    ret, frame = camera_cap0.read()
+    cv2.imwrite('Frame'+str(snp_cnt[0])+'.jpg', frame)
+    snp_cnt[0]+=1
+    return snp_cnt
+
+     
+    
+
+def touch_1(n,width,height,camera_cap0):
     dim = (width,height)
     new_window = Toplevel(root)
     new_window.title("camera " + str(n))
@@ -26,16 +39,21 @@ def touch_1(n,width,height,camera_cap):
     f3.pack(fill=BOTH, expand=True)
     w4 = Label(f3, text="", bg="white", fg="black")
     w4.pack(side=LEFT, fill=BOTH, expand=True)
+    s1 = Button(w4,text = "Snap"+str(n),fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(cap[0],snp_cnt)).pack(side=TOP)
+
     while True:
-        ret,cameras_frame = camera_cap.read()
+        ret,cameras_frame = camera_cap0.read()
         cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
         img = cv2.resize(cv2image, dim,fx = 2, fy = 2, interpolation = cv2.INTER_AREA)
         img = Image.fromarray(img)
         imgtk = ImageTk.PhotoImage(image = img)
         w4.imgtk = imgtk
         w4.configure(image=imgtk)
+        
+
         root.update_idletasks()
         root.update()
+        #root.attributes('-fullscreen', True)
   
 def close():
      root.destroy()   
@@ -45,7 +63,7 @@ f1 = Frame(root)
 f2 = Frame(root)
 #roben1=PhotoImage(file="4.png")
 # image resize
-arr_image=['6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','17.jpeg','18.jpeg','19.jpeg','20.jpeg',]
+arr_image=['6.jpeg','8.jpeg','9.jpeg']
 photos=random.sample(arr_image,2)
 photo1=photos[0]
 photo2=photos[1]
@@ -56,8 +74,12 @@ img_left=img_left.resize((width//4,height//2))
 img_right=ImageTk.PhotoImage(img_right)
 img_left=ImageTk.PhotoImage(img_left)
 # Initialize labels
+
 w1 = Label(f1, text="Camera", bg="white", fg="black",font=3)
 w2 = Button(f1, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(1,width,height,camera_cap0))
+s1 = Button(w1,text = "Snap1",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
+s2 = Button(w1,text = "Snap2",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
+s3 = Button(w1,text = "Snap3",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
 
 buttom_exit = Button(w1,text = "X",bg="red",fg="white",font=3,relief="sunken",width=10,command=close)
 
@@ -94,7 +116,7 @@ camera_cap0.set(4,400)
 #for camera 3
 #camera_cap2 =cv2.VideoCapture(2)
 #camera_cap2.set(4,400)
-
+cap = [camera_cap0]
 dim = (width,height)
 dim1 = (width//2,height//2)
 dim2 = (width//2,height//2)
