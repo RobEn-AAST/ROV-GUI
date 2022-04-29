@@ -18,18 +18,47 @@ root.title("ROV")
 
 # Initialize frames
 root.attributes('-fullscreen', True)
-snp_cnt = [0]
-def snaps(camera_cap0,snp_cnt):
+snp_cnt=[0]
+shots = [0,0,0]
+try:
+    with open ('numberOfShots', 'r') as f:
+        shots[0] = int(f.readline())
+        shots[1] = int(f.readline())
+        shots[2] = int(f.readline())
 
-    ret, frame = camera_cap0.read()
-    cv2.imwrite('Frame'+str(snp_cnt[0])+'.jpg', frame)
-    snp_cnt[0]+=1
+except FileNotFoundError:
+    f = open ('numberOfShots', 'w')
+    f.write('0\n0\n0')
+    f.close()
+except FileExistsError:
+    pass
+try:
+    os.mkdir('camera 1')
+    os.mkdir('camera 2')
+    os.mkdir('camera 3')
+except FileExistsError:
+    pass
+def snaps(n,camera_shot,snp_cnt):
+    
+    ret, frame = camera_shot.read()
+    # cv2.imwrite('Frame'+str(snp_cnt[0])+'.jpg', frame)
+    file_name = 'Frame'+str(shots[n-1])+'.jpg'
+    if camera_shot==camera_cap0:
+        cv2.imwrite(os.path.join('camera 1', file_name), frame)
+        shots[0] += 1
+    elif camera_shot==camera_cap1:
+        cv2.imwrite(os.path.join('camera 2', file_name), frame)
+        shots[1] += 1
+    else:
+        print('hello')
+    # elif camera_shot==camera_cap2:
+        # cv2.imwrite(os.path.join('camera 3', file_name), frame)
+        # shots[2] += 1
     return snp_cnt
-
      
     
 
-def touch_1(n,width,height,camera_cap0):
+def touch_1(n,width,height,camera_cap):
     dim = (width,height)
     new_window = Toplevel(root)
     new_window.title("camera " + str(n))
@@ -37,12 +66,11 @@ def touch_1(n,width,height,camera_cap0):
 
     f3 = Frame(new_window, bg="white")    
     f3.pack(fill=BOTH, expand=True)
-    w4 = Label(f3, text="", bg="white", fg="black")
+    w4 = Button(f3, text="", bg="white", fg="black",relief="sunken",command=lambda:snaps(n,camera_cap,snp_cnt))
     w4.pack(side=LEFT, fill=BOTH, expand=True)
-    s1 = Button(w4,text = "Snap"+str(n),fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(cap[0],snp_cnt)).pack(side=TOP)
 
     while True:
-        ret,cameras_frame = camera_cap0.read()
+        ret,cameras_frame = camera_cap.read()
         cv2image= cv2.cvtColor(cameras_frame,cv2.COLOR_BGR2RGB)
         img = cv2.resize(cv2image, dim,fx = 2, fy = 2, interpolation = cv2.INTER_AREA)
         img = Image.fromarray(img)
@@ -53,17 +81,21 @@ def touch_1(n,width,height,camera_cap0):
 
         root.update_idletasks()
         root.update()
-        #root.attributes('-fullscreen', True)
   
-def close():
-     root.destroy()   
+def end():
+    with open ('numberOfShots', 'w') as f:
+        f.write(str (shots[0]) + '\n')
+        f.write(str (shots[1]) + '\n')
+        f.write(str (shots[2]) + '\n')
+    f.close()
+    root.destroy()   
 
 
 f1 = Frame(root)
 f2 = Frame(root)
 #roben1=PhotoImage(file="4.png")
 # image resize
-arr_image=['6.jpeg','8.jpeg','9.jpeg']
+arr_image=['6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','17.jpeg','18.jpeg','19.jpeg','20.jpeg']
 photos=random.sample(arr_image,2)
 photo1=photos[0]
 photo2=photos[1]
@@ -77,16 +109,16 @@ img_left=ImageTk.PhotoImage(img_left)
 
 w1 = Label(f1, text="Camera", bg="white", fg="black",font=3)
 w2 = Button(f1, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(1,width,height,camera_cap0))
-s1 = Button(w1,text = "Snap1",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
-s2 = Button(w1,text = "Snap2",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
-s3 = Button(w1,text = "Snap3",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(camera_cap0,snp_cnt)).pack(side=LEFT)
+s1 = Button(w1,text = "Snap1",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(1,camera_cap0,snp_cnt)).pack(side=LEFT)
+s2 = Button(w1,text = "Snap2",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(2,camera_cap1,snp_cnt)).pack(side=LEFT)
+s3 = Button(w1,text = "Snap3",fg="black",font=3,relief="sunken",width=15,command=lambda:snaps(3,camera_cap1,snp_cnt)).pack(side=LEFT)
 
-buttom_exit = Button(w1,text = "X",bg="red",fg="white",font=3,relief="sunken",width=10,command=close)
+buttom_exit = Button(w1,text = "X",bg="red",fg="white",font=3,relief="sunken",width=10,command=end)
 
 photo_left=Label(f1,bg="white", image=img_left)
 photo_right=Label(f1,bg="white", image=img_right)
-w1b = Button(f2, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(2,width,height,camera_cap0))
-w3b = Button(f2, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(3,width,height,camera_cap0))
+w1b = Button(f2, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(2,width,height,camera_cap1))
+w3b = Button(f2, text="", bg="white", fg="black",relief="sunken",command=lambda:touch_1(3,width,height,camera_cap1))
 
 
 # Packing level 1
@@ -110,13 +142,13 @@ camera_cap0 =cv2.VideoCapture(0)
 camera_cap0.set(4,400)
 
 #for camera 2
-#camera_cap1 =cv2.VideoCapture(1)
-#camera_cap1.set(4,400)
+camera_cap1 =cv2.VideoCapture(1)
+camera_cap1.set(4,400)
 
 #for camera 3
 #camera_cap2 =cv2.VideoCapture(2)
 #camera_cap2.set(4,400)
-cap = [camera_cap0]
+
 dim = (width,height)
 dim1 = (width//2,height//2)
 dim2 = (width//2,height//2)
@@ -125,13 +157,13 @@ dim3 = (width//2,height//2)
 while True:
     ret0,cameras_frame0 = camera_cap0.read()
     cv2image0= cv2.cvtColor(cameras_frame0,cv2.COLOR_BGR2RGB)
-    #ret1,cameras_frame1 = camera_cap1.read()
-    #cv2image1= cv2.cvtColor(cameras_frame1,cv2.COLOR_BGR2RGB)
+    ret1,cameras_frame1 = camera_cap1.read()
+    cv2image1= cv2.cvtColor(cameras_frame1,cv2.COLOR_BGR2RGB)
     #ret2,cameras_frame2 = camera_cap2.read()
     #cv2image2= cv2.cvtColor(cameras_frame2,cv2.COLOR_BGR2RGB)
     img1 = cv2.resize(cv2image0,dim1,fx=1,fy=1, interpolation = cv2.INTER_AREA)
-    img2 = cv2.resize(cv2image0, dim2,fx=1,fy=1,  interpolation = cv2.INTER_AREA)
-    img3 = cv2.resize(cv2image0,dim3, fx=1,fy=1,interpolation = cv2.INTER_AREA)
+    img2 = cv2.resize(cv2image1, dim2,fx=1,fy=1,  interpolation = cv2.INTER_AREA)
+    img3 = cv2.resize(cv2image1,dim3, fx=1,fy=1,interpolation = cv2.INTER_AREA)
     img1 = Image.fromarray(img1)
     img2 = Image.fromarray(img2)
     img3 = Image.fromarray(img3)
