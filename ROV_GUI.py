@@ -67,19 +67,23 @@ def camera_reader(source, camera_queue):
     print("Cam Loaded...")
     while(True):
         ret,frame = cap.read()
-        camera_queue.append([frame,source]) 
+        if frame is not None:
+            camera_queue.append([frame,source]) 
+        else:
+           cap = cv2.VideoCapture(source)     
+          
+
+camera_read = threading.Thread(target=camera_reader, args=(1, camera_queue,))
+camera_read.daemon = True
+camera_read.start() 
 
 camera_read = threading.Thread(target=camera_reader, args=(0, camera_queue,))
 camera_read.daemon = True
 camera_read.start() 
 
-# camera_read = threading.Thread(target=camera_reader, args=(1, camera_queue,))
-# camera_read.daemon = True
-# camera_read.start() 
-
-# camera_read = threading.Thread(target=camera_reader, args=(2, camera_queue,))
-# camera_read.daemon = True
-# camera_read.start() 
+camera_read = threading.Thread(target=camera_reader, args=(2, camera_queue,))
+camera_read.daemon = True
+camera_read.start() 
 
 
   
@@ -88,7 +92,7 @@ f1 = Frame(root, bg="grey")
 f2 = Frame(root, bg="pink")
 
 
-arr_image=['6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','17.jpeg','18.jpeg','19.jpeg','20.jpeg',]
+arr_image=['koko.png','6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','17.jpeg','18.jpeg','19.jpeg','20.jpeg','d.png']
 photos=random.sample(arr_image,2)
 photo1=photos[0]
 photo2=photos[1]
@@ -156,19 +160,22 @@ dim = [(width//2,height//2),(width//2,height//2),(width//2,height//2)]
     
 
 while True:
-    if len(camera_queue)!=0:
+    if len(camera_queue)!=0 :
         frame ,source  = camera_queue.popleft()
+        
         cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         img1 = cv2.resize(cv2image,dim[source+1],fx=1,fy=1, interpolation = cv2.INTER_AREA)
-    
+        
         img1 = Image.fromarray(img1)
-        
-        #img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+            
+            #img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
         imgtk = ImageTk.PhotoImage(image = img1)
-        
+            
         labels[source+1].imgtk = imgtk
         labels[source+1].configure(image=imgtk)
-        
+            
 
         root.update_idletasks()
         root.update()
+        
+               
