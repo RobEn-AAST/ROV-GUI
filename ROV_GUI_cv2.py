@@ -12,6 +12,7 @@ import queue
 import threading
 from collections import deque
 import random
+import os
 
 
 width = root.winfo_screenwidth()
@@ -96,8 +97,11 @@ f1 = Frame(root, bg="grey")
 f2 = Frame(root, bg="pink")
 
 
-arr_image=['koko.png','6.jpeg','7.jpeg','8.jpeg','9.jpeg','10.jpeg','11.jpeg','12.jpeg','13.jpeg','14.jpeg','15.jpeg','16.jpeg','17.jpeg','18.jpeg','19.jpeg','20.jpeg','d.png']
-photos=random.sample(arr_image,2)
+img_arr=[]
+for image in os.listdir('photos'):
+    img_arr.append(image)
+photos=random.sample(img_arr,2)
+
 photo1=photos[0]
 photo2=photos[1]
 img_right=Image.open(photo2)
