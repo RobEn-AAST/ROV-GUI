@@ -24,7 +24,7 @@ root.attributes('-fullscreen', True)
 def touch_1(n,width,height,index):
     dim = (width,height)
     new_window = Toplevel(root)
-    new_window.title("camera " + str(n))
+    new_window.title("camera " + index)
     new_window.geometry("%dx%d" % (width, height))
 
     f3 = Frame(new_window, bg="pink")    
@@ -63,11 +63,11 @@ def camera_reader(source, camera_queue,index):
             cap = RovCam(source)   
            
 
-camera_read = threading.Thread(target=camera_reader, args=(RovCam.FRONT, camera_queue,0))
+camera_read = threading.Thread(target=camera_reader, args=(RovCam.FRONT, camera_queue,"FRONT"))
 camera_read.daemon = True
 camera_read.start() 
 
-camera_read = threading.Thread(target=camera_reader, args=(RovCam.ARM, camera_queue,1))
+camera_read = threading.Thread(target=camera_reader, args=(RovCam.ARM, camera_queue,"ARM"))
 camera_read.daemon = True
 camera_read.start() 
 
@@ -88,9 +88,9 @@ labels = (Label(f1, text="Red", bg="black", fg="white",height=3),
          , Label(f2, text="Blue", bg="blue", fg="white") )
 
 
-b1 = Button(labels[0],text = "Button 1",width=15,command=lambda:touch_1(1,width,height,0))
-b2 = Button(labels[0],text = "Button 2",width=15,command=lambda:touch_1(1,width,height,1))
-b3 = Button(labels[0],text = "Button 3",width=15,command=lambda:touch_1(1,width,height,2))
+b1 = Button(labels[0],text = "Button 1",width=15,command=lambda:touch_1(width,height,"FRONT"))
+b2 = Button(labels[0],text = "Button 2",width=15,command=lambda:touch_1(width,height,"ARM"))
+b3 = Button(labels[0],text = "Button 3",width=15,command=lambda:touch_1(width,height,2))
 b4 = Button(labels[0],text = "quit",width=15,command=close)
 
 
