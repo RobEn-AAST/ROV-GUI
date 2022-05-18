@@ -91,12 +91,13 @@ def touch_1(width,height,index,f1,f2):
             if source == index:
                 
                 cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                Screen_thread =threading.Thread(target=Resize, args=(cv2image,dim))
-                Screen_thread.daemon = True
-                Screen_thread.start() 
-                Screen_thread.join()
-                img1 = big_Screen.pop()
+                # Screen_thread =threading.Thread(target=Resize, args=(cv2image,dim))
+                # Screen_thread.daemon = True
+                # Screen_thread.start() 
+                # Screen_thread.join()
+                # img1 = big_Screen.pop()
                 img1 = Image.fromarray(img1)
+                img1 = img1.resize((1000,800))
                 imgtk = ImageTk.PhotoImage(image = img1)
                 w4.imgtk = imgtk
                 w4.configure(image=imgtk)
