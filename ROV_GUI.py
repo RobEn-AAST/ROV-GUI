@@ -96,7 +96,7 @@ def touch_1(width,height,index,f1,f2):
                 # Screen_thread.start() 
                 # Screen_thread.join()
                 # img1 = big_Screen.pop()
-                img1 = Image.fromarray(img1)
+                img1 = Image.fromarray(cv2image)
                 img1 = img1.resize((1000,800))
                 imgtk = ImageTk.PhotoImage(image = img1)
                 w4.imgtk = imgtk
