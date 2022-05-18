@@ -38,11 +38,11 @@ def camera_reader(source, camera_queue,index):
         else:
             cap = RovCam(source)
 
-camera_read = threading.Thread(target=camera_reader, args=(RovCam.FRONT, camera_queue,1))
+camera_read = threading.Thread(target=camera_reader, args=(RovCam.FRONT, camera_queue,0))
 camera_read.daemon = True
 camera_read.start() 
 
-camera_read = threading.Thread(target=camera_reader, args=(RovCam.ARM, camera_queue,0))
+camera_read = threading.Thread(target=camera_reader, args=(RovCam.ARM, camera_queue,1))
 camera_read.daemon = True
 camera_read.start() 
 
